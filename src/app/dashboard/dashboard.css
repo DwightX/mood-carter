@@ -1,0 +1,8 @@
+.card-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.card-container{
+    margin-bottom: 10px;
+}

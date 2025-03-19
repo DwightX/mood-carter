@@ -17,6 +17,7 @@ export default function SignIn() {
       router.push("/dashboard");
     }
   })
+  
   const signIn = async () => {
     setLoading(true);
     const auth = getAuth();
