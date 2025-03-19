@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import  "./QuoteCard.css";
+import "./QuoteCard.css";
 
 export default function QuoteCard() {
   const [quote, setQuote] = useState({ text: "", author: "" });
@@ -19,9 +19,24 @@ export default function QuoteCard() {
   }, []);
 
   return (
-    <div className="quote-card">
-      <p className="">{quote.text}</p>
-      <p className="text-sm text-gray-500">- {quote.author}</p>
-    </div>
+<div className="quote-card bg-blue-500 text-white p-6 rounded-lg shadow-lg relative">
+  {/* Quote Icon */}
+  <div className="absolute top-4 left-4 text-6xl text-black opacity-70">
+    <span className="font-serif leading-none">“</span>
+  </div>
+
+  {/* Quote Text */}
+  <p className="quote-text text-white text-lg leading-relaxed pl-10">
+    {quote.text}
+  </p>
+
+  {/* Quote Author */}
+  <div className="flex justify-end mt-4">
+    <p className="quote-author bg-black text-white text-sm px-4 py-1 rounded-lg">
+      - {quote.author}
+    </p>
+  </div>
+</div>
+
   );
 }

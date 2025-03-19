@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import "../../../../firebaseConfig.js"; // Firebase config import
 
 export default function SignUp() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -15,8 +16,17 @@ export default function SignUp() {
     setLoading(true);
     const auth = getAuth();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/auth/signIn"); // Redirect to sign-in after sign-up
+      // Create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      // Update the user's display name after creating the account
+      await updateProfile(user, {
+        displayName: name, // Set the name as displayName
+      });
+  
+      console.log("User registered with display name:", user.displayName);
+      router.push("/auth/signIn"); // Redirect after successful sign-up
     } catch (err) {
       alert("Sign up failed: " + err.message);
     } finally {
@@ -30,6 +40,13 @@ export default function SignUp() {
         <h1 className="text-4xl font-bold text-center text-white mb-8">Sign Up</h1>
 
         <div className="space-y-4">
+        <input
+            type="name"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-3 rounded-lg border focus:outline-none bg-[#001029] text-white placeholder-gray-400"
+          />
           <input
             type="email"
             placeholder="Email"

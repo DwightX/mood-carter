@@ -11,6 +11,7 @@ import Calendar from "../components/Calendar/Calendar";
 import TodayMoodCard from "../components/TodayMoodCard/TodayMoodCard";
 import PreviousDateMoodCard from "../components/PreviousDateCard/PreviousDateMoodCard";
 import QuoteCard from "../components/QuoteCard/QuoteCard";
+import Userinfo from "../components/UserInfo/userinfo";
 import "./dashboard.css";
 
 export default function Dashboard() {
@@ -45,6 +46,7 @@ export default function Dashboard() {
               date: data.date?.toDate?.() || new Date(data.date), // Safely convert Firestore date
               mood: data.mood || "Neutral",
               note: data.note || "",
+              email: data.email,
             };
           });
           setMoodData(moodEvents);
@@ -74,59 +76,82 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="">
-      <div className="card-container">
-        <div className="card-row">
-          {moodData.length > 0 ? (
-            moodData
-              .filter((mood) => {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); // Reset to start of the day
-                const moodDate = new Date(mood.date);
-                moodDate.setHours(0, 0, 0, 0); // Reset mood date to start of the day
-                return moodDate.getTime() === today.getTime();
-              })
-              .slice(0, 1) // Only render one card
-              .map((mood) => (
-                <TodayMoodCard
-                  key={mood.id}
-                  mood={mood.mood}
-                  date={mood.date.toDateString()}
-                  note={mood.note}
-                />
-              ))
-          ) : (
-            <h1 className="text-2xl text-white">No mood data for today.</h1>
-          )}
-          {moodData.length > 0 ? (
-            moodData
-              .filter((mood) => {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1); // Get previous day
-                yesterday.setHours(0, 0, 0, 0); // Reset to start of the day
-                const moodDate = new Date(mood.date);
-                moodDate.setHours(0, 0, 0, 0); // Reset mood date to start of the day
-                return moodDate.getTime() === yesterday.getTime();
-              })
-              .slice(0, 1) // Only render one card
-              .map((mood) => (
-                <PreviousDateMoodCard
-                  key={mood.id}
-                  mood={mood.mood}
-                  date={mood.date.toDateString()}
-                  note={mood.note}
-                />
-              ))
-          ) : (
-            <h1 className="text-2xl text-white">No mood data for previous day.</h1>
-          )}
-          <QuoteCard />
+
+<div className="flex flex-col w-full gap-4 p-4">
+  {/* User info at the top - full width */}
+  <div className="w-full">
+    <Userinfo user={user} />
+  </div>
+
+  {/* Main content below - flex row */}
+  <div className="flex flex-row w-full gap-4">
+    {/* Left column with mood cards - 25% width */}
+    <div className="flex flex-col w-1/4 gap-4">
+      {moodData.length > 0 ? (
+        moodData
+          .filter((mood) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset to start of the day
+            const moodDate = new Date(mood.date);
+            moodDate.setHours(0, 0, 0, 0); // Reset mood date to start of the day
+            return moodDate.getTime() === today.getTime();
+          })
+          .slice(0, 1) // Only render one card
+          .map((mood) => (
+            <TodayMoodCard
+              key={mood.id}
+              mood={mood.mood}
+              date={mood.date.toDateString()}
+              note={mood.note}
+            />
+          ))
+      ) : (
+        <div className="p-4 bg-gray-800 rounded-lg">
+          <h1 className="text-2xl text-white">No mood data for today.</h1>
         </div>
+      )}
+
+      {moodData.length > 0 ? (
+        moodData
+          .filter((mood) => {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1); // Get previous day
+            yesterday.setHours(0, 0, 0, 0); // Reset to start of the day
+            const moodDate = new Date(mood.date);
+            moodDate.setHours(0, 0, 0, 0); // Reset mood date to start of the day
+            return moodDate.getTime() === yesterday.getTime();
+          })
+          .slice(0, 1) // Only render one card
+          .map((mood) => (
+            <PreviousDateMoodCard
+              key={mood.id}
+              mood={mood.mood}
+              date={mood.date.toDateString()}
+              note={mood.note}
+            />
+          ))
+      ) : (
+        <div className="p-4 bg-gray-800 rounded-lg">
+          <h1 className="text-2xl text-white">No mood data for previous day.</h1>
+        </div>
+      )}
+    </div>
+
+    {/* Right column with QuoteCard and Calendar - 75% width */}
+    <div className="flex flex-col w-3/4 gap-4">
+      {/* QuoteCard takes full width */}
+      <div className="w-full">
+        <QuoteCard />
       </div>
-      <div className="row">
-        {/* Pass moodData and setMoodData to Calendar */}
+
+      {/* Calendar Section */}
+      <div className="w-full">
         <Calendar moodData={moodData} setMoodData={setMoodData} />
       </div>
     </div>
-  );  
+  </div>
+</div>
+
+  );
+  
 }
